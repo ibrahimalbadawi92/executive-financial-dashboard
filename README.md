@@ -105,8 +105,8 @@ generator's own docstring for the full design.
 
 ## How to Run
 ```
-git clone <this-repo>
-cd executive-financial-dashboard-public
+git clone https://github.com/ibrahimalbadawi92/executive-financial-dashboard.git
+cd executive-financial-dashboard
 pip install -r requirements.txt
 python scripts/generate_synthetic_data.py   # creates data/sample_financial_data.xlsx
 streamlit run app.py
