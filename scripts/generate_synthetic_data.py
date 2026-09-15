@@ -8,10 +8,13 @@ the original company dataset.
 
 Every row in every sheet is independently sampled from the distributions
 and templates defined below. No original workbook is opened, imported, or
-referenced anywhere in this file. Names are built from fixed template
-lists + numeric counters (never a third-party name-corpus library), so
-there is zero chance of coincidentally reproducing a real business's
-identifiers.
+referenced anywhere in this file. Names are built by deterministically
+walking every combination of fixed template word lists (legal form + brand
+concept + business descriptor) - never a third-party name-corpus library -
+so there is zero chance of coincidentally reproducing a real business's
+identifiers. Each name pool is sized so the walked combinations are
+naturally unique without needing a visible numeric counter appended to the
+display name (see _make_names/_make_external_names below).
 
 Run:
     python scripts/generate_synthetic_data.py
@@ -46,17 +49,23 @@ MONTH_WEIGHTS = np.array([0.90, 0.88, 0.95, 1.00, 0.92, 0.85,
                            0.80, 0.90, 1.05, 1.10, 1.15, 1.30])  # mild Q4 push
 
 # --------------------------------------------------------------------------
-# Name templates (fixed lists + numeric counters only - never a Faker/name
-# corpus, so there is no possibility of coincidentally regenerating a real
-# business name).
+# Name templates (fixed word lists, deterministically combined - never a
+# Faker/name corpus, so there is no possibility of coincidentally
+# regenerating a real business name). Each pool below is sized so that
+# prefixes * cores * suffixes comfortably exceeds the number of names
+# actually needed, which is what lets _make_names produce naturally unique
+# combinations with no numeric counter appended to the display name.
 # --------------------------------------------------------------------------
-CUSTOMER_PREFIXES = ["شركة", "مؤسسة", "مصنع", "مجموعة"]
+CUSTOMER_PREFIXES = ["شركة", "مؤسسة"]
 CUSTOMER_CORES = [
-    "الأفق", "الريادة", "المدار", "النخبة", "الواحة", "السنابل", "البستان",
-    "القمة", "الرواد", "الإتقان", "الشروق", "الازدهار", "الفجر", "المسار",
-    "الينابيع", "الرياض المتحدة", "الخليج الحديثة", "التقدم", "الأمانة", "الوفاء",
+    "آفاق", "روافد", "ركائز", "مدارات", "منارات", "مسارات", "روابي", "أبعاد",
+    "جسور", "رؤى", "قمم", "بوابة", "نواة", "مدى", "إشراقة", "ينابيع",
+    "مرسى", "سواعد", "أصول", "ريادة",
 ]
-CUSTOMER_SUFFIXES = ["التجارية", "للمقاولات", "للتجارة العامة", "للاستثمار", "للتوريدات"]
+CUSTOMER_SUFFIXES = [
+    "التجارية", "للتجارة", "للتوريدات", "للخدمات التجارية", "للتوزيع",
+    "للإمدادات", "للتجارة العامة",
+]
 
 INTERNAL_SUPPLIER_CORES = [
     "الأصالة", "المتانة", "الاتحاد", "البناء الحديث", "الإعمار", "الصفوة",
@@ -68,10 +77,10 @@ INTERNAL_SUPPLIER_CORES = [
 INTERNAL_SUPPLIER_SUFFIXES = ["للتجارة", "للمواد", "للتوريدات العامة", "الصناعية"]
 
 EXTERNAL_SUPPLIER_CORES = [
-    "Global Foods Trading", "Northstar Ingredients", "Atlas Supply International",
-    "Meridian Commodities", "Blue Harbor Exports", "Continental Parts Trading",
-    "Silverline Industrial Supply", "Horizon Equipment Group", "Pacific Rim Sourcing",
-    "Ironclad Components", "Vantage Global Trading", "Summit Machinery Exports",
+    "Northstar Food Trading", "Atlas Ingredients", "Meridian Supply Group",
+    "Bluehaven Foods", "Evercrest Trading", "Horizon Ingredients",
+    "Summit Food Supply", "Continental Parts Trading", "Silverline Industrial Supply",
+    "Pacific Rim Sourcing", "Ironclad Components", "Vantage Global Trading",
     "Cascade Materials Co", "Beacon Freight & Supply", "Sterling Import Partners",
     "Anchor Point Trading",
 ]
@@ -93,23 +102,37 @@ def _rng():
 
 
 def _make_names(prefixes, cores, suffixes, count, rng):
-    """Deterministically build `count` distinct fictional names from the
-    template lists above, each tagged with a zero-padded counter so no two
-    collide even if the template combination repeats."""
-    names = []
-    combo_idx = 0
-    while len(names) < count:
-        p = prefixes[combo_idx % len(prefixes)]
-        c = cores[(combo_idx // len(prefixes)) % len(cores)]
-        s = suffixes[(combo_idx // (len(prefixes) * len(cores))) % len(suffixes)]
-        names.append(f"{p} {c} {s} {len(names) + 1:03d}")
-        combo_idx += 1
+    """Deterministically build `count` distinct fictional names by walking
+    every (prefix, core, suffix) combination in a fixed order - this is a
+    bijection onto distinct triples as long as count <= len(prefixes) *
+    len(cores) * len(suffixes) (asserted below), so the combinations are
+    naturally unique and no numeric counter needs to be appended to the
+    display name. RNG usage is a single rng.shuffle(names) call at the end,
+    whose consumption of the random stream depends only on `count`, not on
+    the word-list content - this keeps every downstream financial draw's
+    position in the shared RNG stream unaffected by which words are used
+    here."""
+    capacity = len(prefixes) * len(cores) * len(suffixes)
+    assert count <= capacity, f"name pool too small: need {count}, have {capacity} combinations"
+    names = [
+        f"{prefixes[i % len(prefixes)]} "
+        f"{cores[(i // len(prefixes)) % len(cores)]} "
+        f"{suffixes[(i // (len(prefixes) * len(cores))) % len(suffixes)]}"
+        for i in range(count)
+    ]
+    assert len(set(names)) == count, "name collision detected - combination scheme not injective"
     rng.shuffle(names)
     return names
 
 
 def _make_external_names(cores, count, rng):
-    names = [f"{cores[i % len(cores)]} {i + 1:03d}" for i in range(count)]
+    """Same determinism/RNG-isolation property as _make_names: the cores
+    list is already unique, so no counter is appended; the only RNG usage
+    is a single rng.shuffle(names) call whose consumption depends only on
+    `count`."""
+    assert len(cores) >= count, f"external supplier name pool too small: need {count}, have {len(cores)}"
+    names = list(cores[:count])
+    assert len(set(names)) == count, "external supplier name collision"
     rng.shuffle(names)
     return names
 
