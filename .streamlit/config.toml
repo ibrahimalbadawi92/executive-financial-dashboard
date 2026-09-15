@@ -1,0 +1,35 @@
+# Executive Financial Dashboard - theme config.
+# This is the root-cause fix for "dark text on dark background": Streamlit's
+# native widgets (radio/selectbox/multiselect/captions/metric) all inherit
+# their text color from this theme, not from ad-hoc CSS overrides. Setting
+# base="dark" plus explicit colors here means every native widget gets
+# correct light text automatically, in the main body AND the sidebar.
+
+[theme]
+base = "dark"
+primaryColor = "#20C7C7"
+backgroundColor = "#0B1720"
+secondaryBackgroundColor = "#142530"
+textColor = "#F5F7FA"
+borderColor = "#22333F"
+linkColor = "#20C7C7"
+font = "sans-serif"
+baseRadius = "0.6rem"
+buttonRadius = "0.5rem"
+showWidgetBorder = false
+greenColor = "#3FA772"
+redColor = "#D9574A"
+orangeColor = "#D9A441"
+
+[theme.sidebar]
+backgroundColor = "#0D1B24"
+secondaryBackgroundColor = "#16232D"
+textColor = "#F5F7FA"
+borderColor = "#1C2C38"
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = "stacktrace"
+
+[browser]
+gatherUsageStats = false

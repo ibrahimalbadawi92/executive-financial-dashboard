@@ -1,0 +1,70 @@
+# --------------------------------------------------------------------------
+# Original/private company data - must NEVER be committed.
+# --------------------------------------------------------------------------
+*.xlsx
+*.xls
+*.xlsm
+*.xlsb
+
+# --------------------------------------------------------------------------
+# Environments / secrets
+# --------------------------------------------------------------------------
+.env
+.env.*
+*.pem
+*.key
+secrets.toml
+.streamlit/secrets.toml
+
+# --------------------------------------------------------------------------
+# Python virtual environments
+# --------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+
+# --------------------------------------------------------------------------
+# Python bytecode / caches
+# --------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --------------------------------------------------------------------------
+# Logs / temporary / OS / IDE artifacts
+# --------------------------------------------------------------------------
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# --------------------------------------------------------------------------
+# QA / test-run artifacts (screenshots, ad-hoc browser output) - never
+# meant to be committed; regenerate locally when needed.
+# --------------------------------------------------------------------------
+*.png
+*.jpg
+*.jpeg
+!assets/**/*.png
+!assets/**/*.jpg
+!assets/**/*.jpeg
+qa_output/
+screenshots/
+
+# --------------------------------------------------------------------------
+# Synthetic public dataset - allowlist ONLY the intentional public-safe
+# data file the app ships with. Nothing under data/ is ignored wholesale,
+# so a future accidental real workbook drop here is still caught by the
+# *.xlsx rule above; only this one exact, deterministically-generated
+# synthetic file is exempted.
+# --------------------------------------------------------------------------
+!data/sample_financial_data.xlsx
+# data/*.csv        -> intentionally NOT ignored (public-safe synthetic data)
+# data/*.parquet     -> intentionally NOT ignored (public-safe synthetic data)
