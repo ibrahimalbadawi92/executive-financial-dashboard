@@ -18,6 +18,12 @@ accuracy and auditability first, visual design second.
 > شركة أو مشتقة منها. لا توجد أي معلومات تجارية سرية أو هويات عملاء/موردين حقيقية أو نتائج مالية فعلية في هذا
 > المشروع.
 
+## 🚀 Live Dashboard
+
+[**Open Live Dashboard**](https://executive-financial-dashboard.streamlit.app/)
+
+Explore the interactive bilingual dashboard directly in your browser — no installation required.
+
 ## What this project demonstrates
 An end-to-end analytics build: a documented data contract, defensive data cleaning with full audit trails,
 approved KPI formulas, a reconciliation/data-quality layer, and a 9-page bilingual executive dashboard - the
