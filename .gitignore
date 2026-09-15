@@ -42,12 +42,15 @@ __pycache__/
 *.temp
 .DS_Store
 Thumbs.db
+desktop.ini
 .idea/
 .vscode/
 
 # --------------------------------------------------------------------------
 # QA / test-run artifacts (screenshots, ad-hoc browser output) - never
-# meant to be committed; regenerate locally when needed.
+# meant to be committed; regenerate locally when needed. This intentionally
+# does NOT cover assets/screenshots/, which holds the curated portfolio
+# screenshots referenced from README.md - see the explicit exception below.
 # --------------------------------------------------------------------------
 *.png
 *.jpg
@@ -57,6 +60,7 @@ Thumbs.db
 !assets/**/*.jpeg
 qa_output/
 screenshots/
+!assets/screenshots/
 
 # --------------------------------------------------------------------------
 # Synthetic public dataset - allowlist ONLY the intentional public-safe

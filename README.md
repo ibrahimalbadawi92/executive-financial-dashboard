@@ -41,6 +41,28 @@ data (2022-2025).
 8. Supplier Balances / أرصدة الموردين
 9. Data Quality & Reconciliation / جودة البيانات والمطابقة
 
+## Dashboard Preview
+
+### Executive Overview
+KPI summary and trend view across the full 2022-2025 synthetic period.
+![Executive Overview](assets/screenshots/executive-overview.png)
+
+### Sales Performance
+Net/gross sales KPIs and the monthly sales trend by year.
+![Sales Performance](assets/screenshots/sales-performance.png)
+
+### Purchasing Performance
+Internal vs External purchases tracked as clearly separate measures.
+![Purchasing Performance](assets/screenshots/purchasing-performance.png)
+
+### Returns Analysis
+Annual and monthly sales-return trends alongside the return rate.
+![Returns Analysis](assets/screenshots/returns-analysis.png)
+
+### Supplier Balances
+Static, point-in-time debt/creditor snapshot by supplier.
+![Supplier Balances](assets/screenshots/supplier-balances.png)
+
 ## Data Model
 Star-schema style: `DimDate`, `DimCustomer`, `DimSupplier` (with `in_local`/`in_foreign` flags keeping the
 Internal and External supplier universes cleanly separate), `DimCostCenter`. Facts: `FactSales`,
